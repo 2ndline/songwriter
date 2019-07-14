@@ -5,7 +5,6 @@ public class Lyric {
 	private String lyrics;
 	private Integer[] stresses;
 	private String[] rhymes;
-	private String rhymeIndex;
 
 	public Lyric(String lyrics) {
 		this.setLyrics(lyrics);
@@ -25,14 +24,6 @@ public class Lyric {
 
 	public void setRhymes(String[] rhymes) {
 		this.rhymes = rhymes;
-	}
-
-	public String getRhymeIndex() {
-		return rhymeIndex;
-	}
-
-	public void setRhymeIndex(String rhymeIndex) {
-		this.rhymeIndex = rhymeIndex;
 	}
 
 	public String getLyrics() {
