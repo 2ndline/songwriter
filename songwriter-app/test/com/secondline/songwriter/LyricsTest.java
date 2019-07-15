@@ -68,26 +68,26 @@ public class LyricsTest {
 
 		Section intro = song.getSections().get(0);
 		Assert.assertEquals(4, intro.getLyrics().getLyrics().size());
-		Assert.assertEquals("[A, A, A, A]", Arrays.toString(intro.getLyrics().getRhymePattern()));
+		Assert.assertEquals("[0, 0, 0, 0]", Arrays.toString(intro.getLyrics().getRhymePattern()));
 		
 		Section verseOne = song.getSections().get(1);
 		Assert.assertEquals(4, verseOne.getLyrics().getLyrics().size());
-		Assert.assertEquals("[A, A, B, B]", Arrays.toString(verseOne.getLyrics().getRhymePattern()));
+		Assert.assertEquals("[0, 0, 1, 1]", Arrays.toString(verseOne.getLyrics().getRhymePattern()));
 
 		Section verseTwo = song.getSections().get(2);
 		Assert.assertEquals(4, verseTwo.getLyrics().getLyrics().size());
-		Assert.assertEquals("[A, A, B, B]", Arrays.toString(verseTwo.getLyrics().getRhymePattern()));
+		Assert.assertEquals("[0, 0, 1, 1]", Arrays.toString(verseTwo.getLyrics().getRhymePattern()));
 
 		Section bridge = song.getSections().get(3);
 		Assert.assertEquals(6, bridge.getLyrics().getLyrics().size());
-		Assert.assertEquals("[A, B, A, B, B, B]", Arrays.toString(bridge.getLyrics().getRhymePattern()));
+		Assert.assertEquals("[0, 1, 0, 1, 1, 1]", Arrays.toString(bridge.getLyrics().getRhymePattern()));
 
 		Section danceBreak = song.getSections().get(4);
 		Assert.assertEquals(0, danceBreak.getLyrics().getLyrics().size());
 
 		Section verseThree = song.getSections().get(5);
 		Assert.assertEquals(6, verseThree.getLyrics().getLyrics().size());
-		Assert.assertEquals("[A, A, B, B, B, B]", Arrays.toString(verseThree.getLyrics().getRhymePattern()));
+		Assert.assertEquals("[0, 0, 1, 1, 1, 1]", Arrays.toString(verseThree.getLyrics().getRhymePattern()));
 	}
 
 	@Test

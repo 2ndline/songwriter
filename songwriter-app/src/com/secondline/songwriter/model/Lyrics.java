@@ -12,26 +12,26 @@ import java.util.List;
  * 
  */
 public class Lyrics {
-	String[] rhymePattern;
-	String[] stressPattern;
+	Integer[] rhymePattern;
+	boolean[] stressPattern;
 	List<Lyric> lyrics = new ArrayList<Lyric>();
 
 	public Lyrics() {
 	}
 
-	public String[] getRhymePattern() {
+	public Integer[] getRhymePattern() {
 		return rhymePattern;
 	}
 
-	public void setRhymePattern(String[] rhymePattern) {
-		this.rhymePattern = rhymePattern;
+	public void setRhymePattern(Integer[] rhymePattern2) {
+		this.rhymePattern = rhymePattern2;
 	}
 
-	public String[] getStressPattern() {
+	public boolean[] getStressPattern() {
 		return stressPattern;
 	}
 
-	public void setStressPattern(String[] stressPattern) {
+	public void setStressPattern(boolean[] stressPattern) {
 		this.stressPattern = stressPattern;
 	}
 

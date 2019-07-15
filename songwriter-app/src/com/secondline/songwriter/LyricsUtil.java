@@ -4,10 +4,13 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 import java.util.Set;
+import java.util.logging.Logger;
 
 import rita.RiLexicon;
 import rita.RiString;
@@ -27,6 +30,8 @@ import com.secondline.songwriter.model.Song;
 public class LyricsUtil {
 
 	private static RiLexicon lexicon = new RiLexicon();
+
+	final static Logger log = Logger.getLogger(LyricsUtil.class.getName());
 
 	public static Song getSongFromLyricsFile(String filename)
 			throws FileNotFoundException {
@@ -59,8 +64,10 @@ public class LyricsUtil {
 			}
 		}
 		inFile.close();
-		if (lastSection != null)
+		if (lastSection != null) {
+			computePatterns(lastSection.getLyrics());
 			song.getSections().add(lastSection);
+		}
 
 		return song;
 	}
@@ -68,7 +75,8 @@ public class LyricsUtil {
 	private static void computePatterns(Lyrics lyrics) {
 		List<Lyric> lyricList = lyrics.getLyrics();
 		// first, rhyme patterns
-		String[] rhymePattern = new String[lyricList.size()];
+		Integer[] rhymePattern = new Integer[lyricList.size()];
+		Map<Integer, Set<String>> rhymeSetMap = new HashMap<Integer, Set<String>>();
 
 		// get last word & rhymes for each lyric
 		List<String> lastWords = new ArrayList<String>();
@@ -77,12 +85,19 @@ public class LyricsUtil {
 		for (Lyric lyric : lyricList) {
 			rhymeSets
 					.add(new HashSet<String>(Arrays.asList(lyric.getRhymes())));
-			lastWords.add(lyric.getLyrics().substring(
-					lyric.getLyrics().replaceAll("[?.,!-]", "").lastIndexOf(" ") + 1));
+			String lyricString = lyric.getLyrics();
+			lyricString = lyricString.replaceAll("[?.,!-]", "").trim();
+			String lastWord = lyricString.substring(lyricString
+					.lastIndexOf(" ") + 1);
+			lastWords.add(lastWord);
 		}
 
-		int rhymeCount = 0;
+		int rhymeCount = -1;
 		for (int i = 0; i < rhymePattern.length; ++i) {
+			if (rhymePattern[i] != null)
+				continue;
+
+			rhymeCount++;
 			String lastWord = lastWords.get(i);
 			boolean found = false;
 			for (int j = 0; j < rhymeSets.size(); ++j) {
@@ -98,14 +113,17 @@ public class LyricsUtil {
 
 					if (i < j) {
 						// rhymePattern[i] is being repeated at rhymePattern[j]
-						if (rhymePattern[i] == null)
-							rhymePattern[i] = "" + ('A' + rhymeCount++);
+						if (rhymePattern[i] == null) {
+							rhymePattern[i] = rhymeCount;
+							rhymeSet.add(lastWord);
+							rhymeSetMap.put(rhymeCount, rhymeSet);
+						}
 						rhymePattern[j] = rhymePattern[i];
 					}
 				}
 			}
 			if (!found)
-				rhymePattern[i] = "X";
+				rhymePattern[i] = -1;
 
 		}
 		lyrics.setRhymePattern(rhymePattern);
@@ -130,15 +148,18 @@ public class LyricsUtil {
 	}
 
 	public static Lyric getLyrics(String lyrics) {
-		Lyric lyric = new Lyric(lyrics);
+		Lyric lyric = new Lyric(lyrics.trim());
 		lyric.setStresses(getStresses(lyrics));
 		String lastWord = lyrics.substring(lyrics.lastIndexOf(" ") + 1);
 		lyric.setRhymes(lexicon.rhymes(lastWord));
+		if (lyric.getRhymes().length == 0)
+			log.warning("~~~WARNING~~ Last word " + lastWord
+					+ " has no rhymes!");
 		return lyric;
 	}
 
 	private static Integer[] getStresses(String lyrics) {
-		System.out.println("Getting stresses for: " + lyrics);
+		log.fine("Getting stresses for: " + lyrics);
 		if (lyrics.trim().isEmpty())
 			return new Integer[] { -1 };
 
@@ -151,44 +172,44 @@ public class LyricsUtil {
 		String[] wordValues = lyrics.split("[ ,]");
 		String[] stressValues = stresses.split("[ ,]");
 
-		System.out.println("Word values: " + Arrays.toString(wordValues));
-		System.out.println("Stress values: " + Arrays.toString(stressValues));
+		log.fine("Word values: " + Arrays.toString(wordValues));
+		log.fine("Stress values: " + Arrays.toString(stressValues));
 		stressValues = cleanArrays(stressValues);
-		System.out.println("Stress values after cleaning: "
+		log.fine("Stress values after cleaning: "
 				+ Arrays.toString(stressValues));
 
 		int arrayLen = stresses.split("[ ,/]").length;
-		System.out.println("Array len " + arrayLen);
+		log.fine("Array len " + arrayLen);
 		List<Integer> stressList = new ArrayList<Integer>();
 		for (int i = 0; i < wordValues.length; ++i) {
 			String word = wordValues[i];
 			String fullWord = getFullWord(word);
 
 			if (fullWord != word) {
-				System.out.println("Shortened word: " + fullWord);
+				log.fine("Shortened word: " + fullWord);
 				stressList.add(getStressMonoSyllable(fullWord));
-				System.out.println("Calculated stress: "
+				log.fine("Calculated stress: "
 						+ stressList.get(stressList.size() - 1));
 			} else if (stressValues[i].contains("/")) {
 				// multi-syllabic
-				System.out.println("Polysyllabic word: " + fullWord);
+				log.fine("Polysyllabic word: " + fullWord);
 				String[] wordStress = stressValues[i].split("/");
 				for (int j = 0; j < wordStress.length; ++j) {
 					stressList.add(Integer.parseInt(wordStress[j]));
-					System.out.println("Calculated stress: "
+					log.fine("Calculated stress: "
 							+ stressList.get(stressList.size() - 1));
 				}
 			} else {
-				System.out.println("Monosyllabic word: " + word);
+				log.fine("Monosyllabic word: " + word);
 				stressList.add(getStressMonoSyllable(word));
-				System.out.println("Calculated stress: "
+				log.fine("Calculated stress: "
 						+ stressList.get(stressList.size() - 1));
 			}
 		}
 
 		Integer[] result = new Integer[stressList.size()];
 		result = stressList.toArray(result);
-		System.out.println("Returning: " + Arrays.toString(result));
+		log.fine("Returning: " + Arrays.toString(result));
 		return result;
 	}
 
@@ -254,7 +275,7 @@ public class LyricsUtil {
 		RiString rs = new RiString(word);
 		rs.analyze();
 		String pos = rs.getPosAt(0, false);
-		System.out.println("POS: " + pos);
+		log.fine("POS: " + pos);
 		PartsOfSpeech ps = PartsOfSpeech.valueOf(pos);
 		if (ps != null)
 			return ps.getStress();
