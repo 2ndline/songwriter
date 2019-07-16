@@ -37,15 +37,18 @@ public class Song {
 		output.append("Title: " + title + "\n");
 		output.append("========================\n");
 		for (Section section : sections) {
-			output.append("Section: " + section.getTitle() + "\n");
+			output.append("Section: " + section.getTitle());
+			if (section.getLyrics().getRhymePattern() != null)
+				output.append(" ("
+						+ section.getLyrics().getRhymePatternPretty() + ")");
+			output.append("\n");
 			output.append("----\n");
-			for(Lyric lyric : section.getLyrics().getLyrics()){
-				output.append(lyric.getStressesPretty()+"\n");
-				output.append(lyric.getLyrics()+"\n");
+			for (Lyric lyric : section.getLyrics().getLyrics()) {
+				output.append(lyric.getStressesPretty() + "\n");
+				output.append(lyric.getLyrics() + "\n");
 			}
 			output.append("\n");
 		}
 		return output.toString();
 	}
-
 }

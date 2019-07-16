@@ -11,6 +11,7 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
 import com.secondline.songwriter.model.Lyric;
+import com.secondline.songwriter.model.Song;
 
 public class Songwriter {
 
@@ -31,21 +32,24 @@ public class Songwriter {
 			return;
 		}
 
-		if (cmd.hasOption("analyze")) {
+		if (cmd.hasOption("a")) {
 			// get the file & analyze
-			String filename = cmd.getOptionValue("analyze");
+			String filename = cmd.getOptionValue("a");
 			try {
-				List<Lyric> lyrics = LyricsUtil.getLyricsFromFile(filename);
+				Song song = LyricsUtil.getSongFromLyricsFile(filename);
+				String output = song == null ? "No lyrics detected" : song.toString();
+				System.out.println(output);
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
 			}
+			return;
 		}
 	}
 
 	private static Options loadOptions() {
 		Options options = new Options();
 		options.addOption(new Option("h", "help", false, "This message"));
-		options.addOption(Option.builder("analyze").hasArg().argName("file")
+		options.addOption(Option.builder("a").hasArg().argName("file")
 				.desc("use given file for analysis").build());
 		return options;
 	}
