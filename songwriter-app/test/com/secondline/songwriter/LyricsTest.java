@@ -65,13 +65,13 @@ public class LyricsTest {
 		Assert.assertEquals("A A A A", intro.getLyrics()
 				.getRhymePatternPretty());
 		List<String> stressPatterns = Arrays.asList(new String[] {
-				"` u ` ` ` u ` u `",
+				"` u ` ` ` u ` u`",
 
-				"` ` ` u u u `",
+				"` ` ` u u u`",
 
-				"u ` u ` ` u ` ` `",
+				"u ` u ` `u ` ` `",
 
-				"` u ` u ` ` u `" });
+				"` u `u ` ` u `" });
 		for (int i = 0; i < intro.getLyrics().getLyrics().size(); ++i) {
 			Assert.assertEquals("Index " + i, stressPatterns.get(i), intro
 					.getLyrics().getLyrics().get(i).getStressesPretty());
