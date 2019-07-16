@@ -40,6 +40,7 @@ public class Song {
 			output.append("Section: " + section.getTitle() + "\n");
 			output.append("----\n");
 			for(Lyric lyric : section.getLyrics().getLyrics()){
+				output.append(lyric.getStressesPretty()+"\n");
 				output.append(lyric.getLyrics()+"\n");
 			}
 			output.append("\n");

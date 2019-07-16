@@ -13,7 +13,6 @@ import java.util.List;
  */
 public class Lyrics {
 	Integer[] rhymePattern;
-	boolean[] stressPattern;
 	List<Lyric> lyrics = new ArrayList<Lyric>();
 
 	public Lyrics() {
@@ -22,17 +21,23 @@ public class Lyrics {
 	public Integer[] getRhymePattern() {
 		return rhymePattern;
 	}
+	
+	public String getRhymePatternPretty(){
+		StringBuilder sb = new StringBuilder();
+		for(Integer rhyme : rhymePattern){
+			if(rhyme < 0)
+				sb.append("X ");
+			else{
+				char rhymeChar = 'A';
+				rhymeChar+= rhyme;
+				sb.append(Character.toString(rhymeChar) + " ");
+			}
+		}
+		return sb.toString().trim();
+	}
 
 	public void setRhymePattern(Integer[] rhymePattern2) {
 		this.rhymePattern = rhymePattern2;
-	}
-
-	public boolean[] getStressPattern() {
-		return stressPattern;
-	}
-
-	public void setStressPattern(boolean[] stressPattern) {
-		this.stressPattern = stressPattern;
 	}
 
 	public List<Lyric> getLyrics() {

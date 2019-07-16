@@ -23,71 +23,82 @@ public class LyricsTest {
 
 	@Test
 	public void testLyricsUtil() throws FileNotFoundException {
-		//expected values
+		// expected values
 		List<String> stressesList = new ArrayList<String>();
-		List<String> rhymesList = new ArrayList<String>();
-		
-		Scanner inFile = new Scanner(new File("test/resources/icantfight-stresses.txt"));
+
+		Scanner inFile = new Scanner(new File(
+				"test/resources/icantfight-stresses.txt"));
 		while (inFile.hasNextLine()) {
 			stressesList.add(inFile.nextLine());
 		}
 		inFile.close();
 
-		inFile = new Scanner(new File("test/resources/icantfight-rhymes.txt"));
-		while (inFile.hasNextLine()) {
-			rhymesList.add(inFile.nextLine());
-		}
-		inFile.close();
-
-		//get the lyrics from the file
-		List<Lyric> lyricsList = LyricsUtil.getLyricsFromFile("test/resources/icantfight.txt");
+		// get the lyrics from the file
+		List<Lyric> lyricsList = LyricsUtil
+				.getLyricsFromFile("test/resources/icantfight.txt");
 		for (int i = 0; i < lyricsList.size(); ++i) {
-			
-			//check the stresses computed for the lyrics
+
+			// check the stresses computed for the lyrics
 			String expectedStresses = stressesList.get(i);
 			Lyric lyrics = lyricsList.get(i);
 			Assert.assertNotNull(lyrics);
 
-			Assert.assertEquals("Index: "+i, expectedStresses,
+			Assert.assertEquals("Index: " + i, expectedStresses,
 					Arrays.toString(lyrics.getStresses()));
-
-			// TODO calc rhyme pattern, compare to rhymesList
-			String expectedRhymes = rhymesList.get(i);
-
 		}
 	}
-	
+
 	@Test
-	public void testSongLyricsFromFile() throws FileNotFoundException{
-		Song song = LyricsUtil.getSongFromLyricsFile("test/resources/careforgot-lyrics.txt");
+	public void testSongLyricsFromFile() throws FileNotFoundException {
+		Song song = LyricsUtil
+				.getSongFromLyricsFile("test/resources/careforgot-lyrics.txt");
 		Assert.assertNotNull(song);
-		
+
 		Assert.assertEquals("City That Care Forgot", song.getTitle());
 		Assert.assertEquals(6, song.getSections().size());
 		System.out.println(song.toString());
 
 		Section intro = song.getSections().get(0);
 		Assert.assertEquals(4, intro.getLyrics().getLyrics().size());
-		Assert.assertEquals("[0, 0, 0, 0]", Arrays.toString(intro.getLyrics().getRhymePattern()));
-		
+		Assert.assertEquals("[0, 0, 0, 0]",
+				Arrays.toString(intro.getLyrics().getRhymePattern()));
+		Assert.assertEquals("A A A A", intro.getLyrics()
+				.getRhymePatternPretty());
+		List<String> stressPatterns = Arrays.asList(new String[] {
+				"` u ` ` ` u ` u `",
+
+				"` ` ` u u u `",
+
+				"u ` u ` ` u ` ` `",
+
+				"` u ` u ` ` u `" });
+		for (int i = 0; i < intro.getLyrics().getLyrics().size(); ++i) {
+			Assert.assertEquals("Index " + i, stressPatterns.get(i), intro
+					.getLyrics().getLyrics().get(i).getStressesPretty());
+		}
+
 		Section verseOne = song.getSections().get(1);
 		Assert.assertEquals(4, verseOne.getLyrics().getLyrics().size());
-		Assert.assertEquals("[0, 0, 1, 1]", Arrays.toString(verseOne.getLyrics().getRhymePattern()));
+		Assert.assertEquals("A A B B", verseOne.getLyrics()
+				.getRhymePatternPretty());
 
 		Section verseTwo = song.getSections().get(2);
 		Assert.assertEquals(4, verseTwo.getLyrics().getLyrics().size());
-		Assert.assertEquals("[0, 0, 1, 1]", Arrays.toString(verseTwo.getLyrics().getRhymePattern()));
+		Assert.assertEquals("A A B B", verseTwo.getLyrics()
+				.getRhymePatternPretty());
 
 		Section bridge = song.getSections().get(3);
 		Assert.assertEquals(6, bridge.getLyrics().getLyrics().size());
-		Assert.assertEquals("[0, 1, 0, 1, 1, 1]", Arrays.toString(bridge.getLyrics().getRhymePattern()));
+		Assert.assertEquals("A B A B B B", bridge.getLyrics()
+				.getRhymePatternPretty());
 
 		Section danceBreak = song.getSections().get(4);
 		Assert.assertEquals(0, danceBreak.getLyrics().getLyrics().size());
 
 		Section verseThree = song.getSections().get(5);
 		Assert.assertEquals(6, verseThree.getLyrics().getLyrics().size());
-		Assert.assertEquals("[0, 0, 1, 1, 1, 1]", Arrays.toString(verseThree.getLyrics().getRhymePattern()));
+		Assert.assertEquals("A A B B B B", verseThree.getLyrics()
+				.getRhymePatternPretty());
 	}
 
 	@Test

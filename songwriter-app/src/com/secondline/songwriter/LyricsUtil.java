@@ -158,10 +158,10 @@ public class LyricsUtil {
 		return lyric;
 	}
 
-	private static Integer[] getStresses(String lyrics) {
+	private static Boolean[] getStresses(String lyrics) {
 		log.fine("Getting stresses for: " + lyrics);
 		if (lyrics.trim().isEmpty())
-			return new Integer[] { -1 };
+			return new Boolean[] {};
 
 		// strip grammar not needed for computation
 		lyrics = lyrics.replaceAll("[?.,!-]", "");
@@ -180,7 +180,7 @@ public class LyricsUtil {
 
 		int arrayLen = stresses.split("[ ,/]").length;
 		log.fine("Array len " + arrayLen);
-		List<Integer> stressList = new ArrayList<Integer>();
+		List<Boolean> stressList = new ArrayList<Boolean>();
 		for (int i = 0; i < wordValues.length; ++i) {
 			String word = wordValues[i];
 			String fullWord = getFullWord(word);
@@ -195,7 +195,7 @@ public class LyricsUtil {
 				log.fine("Polysyllabic word: " + fullWord);
 				String[] wordStress = stressValues[i].split("/");
 				for (int j = 0; j < wordStress.length; ++j) {
-					stressList.add(Integer.parseInt(wordStress[j]));
+					stressList.add(Integer.parseInt(wordStress[j]) == 1);
 					log.fine("Calculated stress: "
 							+ stressList.get(stressList.size() - 1));
 				}
@@ -207,7 +207,7 @@ public class LyricsUtil {
 			}
 		}
 
-		Integer[] result = new Integer[stressList.size()];
+		Boolean[] result = new Boolean[stressList.size()];
 		result = stressList.toArray(result);
 		log.fine("Returning: " + Arrays.toString(result));
 		return result;
@@ -236,7 +236,7 @@ public class LyricsUtil {
 		// prepositions, articles, conj, aux verbs indicating tense/mood,
 		// personal pronouns, relative pronouns are not
 
-		cc("Coordinating conjunction", 0), cd("Cardinal number", 0), dt(
+		cc("Coordinating conjunction", 0), cd("Cardinal number", 1), dt(
 				"Determiner", 0), ex("Existential there", 0), fw(
 				"Foreign word", 0), in(
 				"Preposition or subordinating conjunction", 1), jj("Adjective",
@@ -256,7 +256,7 @@ public class LyricsUtil {
 				"Verb, non-3rd person singular present", 1), vbz(
 				"Verb, 3rd person singular present", 1), wdt("Wh-determiner", 0), wp(
 				"Wh-pronoun", 0), wp$("Possessive wh-pronoun", 0), wrb(
-				"Wh-adverb", 0);
+				"Wh-adverb", 1);
 
 		private int stress;
 
@@ -270,16 +270,16 @@ public class LyricsUtil {
 
 	}
 
-	private static int getStressMonoSyllable(String word) {
+	private static Boolean getStressMonoSyllable(String word) {
 
 		RiString rs = new RiString(word);
 		rs.analyze();
 		String pos = rs.getPosAt(0, false);
-		log.fine("POS: " + pos);
+		log.fine("Word "+word+ " POS: " + pos);
 		PartsOfSpeech ps = PartsOfSpeech.valueOf(pos);
 		if (ps != null)
-			return ps.getStress();
-		return -1;
+			return (ps.getStress() == 1);
+		return null;
 
 	}
 
@@ -294,7 +294,7 @@ public class LyricsUtil {
 		if (word == null)
 			return null;
 
-		if (word.equals("'Cause"))
+		if (word.equalsIgnoreCase("'Cause"))
 			return "because";
 
 		return word;

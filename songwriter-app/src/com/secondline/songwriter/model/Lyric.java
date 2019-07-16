@@ -3,19 +3,31 @@ package com.secondline.songwriter.model;
 public class Lyric {
 
 	private String lyrics;
-	private Integer[] stresses;
+	private Boolean[] stresses;
 	private String[] rhymes;
 
 	public Lyric(String lyrics) {
 		this.setLyrics(lyrics);
 	}
 
-	public Integer[] getStresses() {
+	public Boolean[] getStresses() {
 		return stresses;
 	}
 
-	public void setStresses(Integer[] integers) {
-		this.stresses = integers;
+	public String getStressesPretty(){
+		StringBuilder sb = new StringBuilder();
+		for(Boolean stress : stresses){
+		    if(stress == null)
+		    	sb.append("X ");
+			else if(stress)
+				sb.append("` ");
+			else
+				sb.append("u ");
+		}
+		return sb.toString().trim();
+	}
+	public void setStresses(Boolean[] booleans) {
+		this.stresses = booleans;
 	}
 
 	public String[] getRhymes() {
