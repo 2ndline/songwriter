@@ -24,6 +24,8 @@ import com.secondline.songwriter.model.Section;
 import com.secondline.songwriter.model.Song;
 import com.secondline.songwriter.model.Syllable;
 import com.secondline.songwriter.model.Word;
+import com.secondline.songwriter.model.analysis.LyricsAnalysis;
+import com.secondline.songwriter.model.analysis.LyricsAnalysis.Balance;
 
 /**
  * LyricsUtil - a utility class for computing lyrical measurements like rhyme
@@ -287,6 +289,17 @@ public class LyricsUtil {
 			return "because";
 
 		return word;
+	}
+
+	public static LyricsAnalysis analyzeLyrics(Lyrics lyrics) {
+	
+		if(lyrics == null || lyrics.getLyrics() == null || lyrics.getLyrics().isEmpty())
+			return null;
+		
+		LyricsAnalysis result = new LyricsAnalysis();
+
+		result.setBalance(lyrics.getLyrics().size() % 2 == 0 ? Balance.SYMMETRICAL : Balance.ASYMMETRICAL);
+		return result;
 	}
 
 }
